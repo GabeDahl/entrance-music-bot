@@ -12,4 +12,5 @@ export const initDiscordClient = async (client: Client) => {
   }
 
   await client.login(token);
+  console.log('started');
 };

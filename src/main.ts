@@ -79,6 +79,8 @@ client.on(Events.ClientReady, async () => {
 
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (isPlaying || oldState.channelId) return;
+  console.log('member ID: ' + newState.member.id);
+  console.log('ID: ' + newState.id);
   const matchedUser = users.find((u) => u.id === newState.member.id);
   if (!matchedUser) return;
   const { url, startAt, mode, duration } = matchedUser.musicConfig;
