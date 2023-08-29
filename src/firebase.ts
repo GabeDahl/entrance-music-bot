@@ -35,7 +35,6 @@ const getUsersCollection = () => {
   }
   return _usersCollection;
 };
-const usersCollection = db.collection('users').withConverter(userConverter);
 
 export async function getUsers(): Promise<User[]> {
   try {
