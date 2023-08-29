@@ -2,6 +2,7 @@ import { db } from './main.js';
 import {
   WithFieldValue,
   QueryDocumentSnapshot,
+  CollectionReference,
 } from 'firebase-admin/firestore';
 
 export interface User {
@@ -26,11 +27,19 @@ const userConverter = {
     };
   },
 };
+
+let _usersCollection: CollectionReference;
+const getUsersCollection = () => {
+  if (!_usersCollection) {
+    _usersCollection = db.collection('users').withConverter(userConverter);
+  }
+  return _usersCollection;
+};
 const usersCollection = db.collection('users').withConverter(userConverter);
 
 export async function getUsers(): Promise<User[]> {
   try {
-    const querySnapshot = await usersCollection.get();
+    const querySnapshot = await getUsersCollection().get();
     const users: User[] = querySnapshot.docs.map((doc) => doc.data() as User);
     return users;
   } catch (error) {
