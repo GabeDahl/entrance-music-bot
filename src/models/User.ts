@@ -1,4 +1,8 @@
-import { WithFieldValue, QueryDocumentSnapshot, CollectionReference } from 'firebase-admin/firestore';
+import {
+  WithFieldValue,
+  QueryDocumentSnapshot,
+  CollectionReference,
+} from 'firebase-admin/firestore';
 import { MusicConfig } from './MusicConfig.js';
 import { db } from '../main.js';
 
@@ -9,7 +13,7 @@ export interface User {
 
 const userConverter = {
   toFirestore(user: WithFieldValue<User>) {
-    return { ...user, id: undefined };
+    return { musicConfig: { ...user.musicConfig } };
   },
   fromFirestore(snapshot: QueryDocumentSnapshot) {
     const data = snapshot.data() as User;
@@ -40,3 +44,8 @@ export async function getUsers(): Promise<User[]> {
     throw error;
   }
 }
+export const setUser = async (user: User) => {
+  getUsersCollection().doc(user.id).set(user, {
+    merge: true,
+  });
+};
