@@ -1,20 +1,12 @@
-import { db } from './main.js';
-import {
-  WithFieldValue,
-  QueryDocumentSnapshot,
-  CollectionReference,
-} from 'firebase-admin/firestore';
+import { WithFieldValue, QueryDocumentSnapshot, CollectionReference } from 'firebase-admin/firestore';
+import { MusicConfig } from './MusicConfig.js';
+import { db } from '../main.js';
 
 export interface User {
   id: string;
-  musicConfig: {
-    duration: string;
-    lastSetBy: string;
-    mode: string;
-    startAt: string;
-    url: string;
-  };
+  musicConfig: MusicConfig;
 }
+
 const userConverter = {
   toFirestore(user: WithFieldValue<User>) {
     return { ...user, id: undefined };
@@ -28,6 +20,8 @@ const userConverter = {
   },
 };
 
+// lazy-loaded singleton to avoid calling
+// db.collection() before app is initialized
 let _usersCollection: CollectionReference;
 const getUsersCollection = () => {
   if (!_usersCollection) {

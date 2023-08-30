@@ -27,3 +27,12 @@ build/
 
 # Misc
 .DS_Store
+
+# Transient Util files
+tmp 
+
+# Environment Variables
+.env
+
+# Service Key
+serviceKey.json
