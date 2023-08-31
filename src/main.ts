@@ -180,7 +180,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const filter =
     filterStr === 'audio' || filterStr === 'audioandvideo'
       ? filterStr
-      : 'audio';
+      : 'audioandvideo';
   const config: MusicConfig = {
     url,
     startAt,
