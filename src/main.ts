@@ -48,11 +48,7 @@ let connection: VoiceConnection;
 let stream: Readable;
 let resource: AudioResource;
 let player: AudioPlayer;
-
 let users: User[];
-client.on(Events.ClientReady, async () => {
-  users = await getUsers();
-});
 
 const endMusic = (): void => {
   if (connection) connection.destroy();
@@ -60,12 +56,13 @@ const endMusic = (): void => {
   isPlaying = false;
 };
 
-const startMusic = (
+const startMusic = async (
   { guild, channel, channelId }: VoiceState,
   config: MusicConfig,
-): void => {
+): Promise<void> => {
   if (isPlaying) return;
   try {
+    users = await getUsers();
     connection = joinVoiceChannel({
       adapterCreator: channel.guild.voiceAdapterCreator,
       channelId: channelId,
