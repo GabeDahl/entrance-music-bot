@@ -44,6 +44,13 @@ export async function getUsers(): Promise<User[]> {
     throw error;
   }
 }
+
+export async function getUser(id: string): Promise<User> {
+  const userRef = await getUsersCollection().doc(id).get();
+
+  return userRef.data() as User;
+}
+
 export const setUser = async (user: User) => {
   getUsersCollection().doc(user.id).set(user, {
     merge: true,

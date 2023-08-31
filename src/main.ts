@@ -25,7 +25,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { initDiscordClient } from './discord.js';
 import { Readable } from 'stream';
 import { MusicConfig } from './models/MusicConfig.js';
-import { User, getUsers, setUser } from './models/User.js';
+import { User, getUser, getUsers, setUser } from './models/User.js';
 
 const client = new Client({
   intents: [
@@ -48,7 +48,11 @@ let connection: VoiceConnection;
 let stream: Readable;
 let resource: AudioResource;
 let player: AudioPlayer;
+
 let users: User[];
+client.on(Events.ClientReady, async () => {
+  users = await getUsers();
+});
 
 const endMusic = (): void => {
   if (connection) connection.destroy();
@@ -56,13 +60,12 @@ const endMusic = (): void => {
   isPlaying = false;
 };
 
-const startMusic = async (
+const startMusic = (
   { guild, channel, channelId }: VoiceState,
   config: MusicConfig,
-): Promise<void> => {
+): void => {
   if (isPlaying) return;
   try {
-    users = await getUsers();
     connection = joinVoiceChannel({
       adapterCreator: channel.guild.voiceAdapterCreator,
       channelId: channelId,
@@ -96,13 +99,15 @@ const startMusic = async (
   }
 };
 
-client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
   if (isPlaying || oldState.channelId) return;
   console.log('member ID: ' + newState.member.id);
   console.log('ID: ' + newState.id);
   const matchedUser = users.find((u) => u.id === newState.member.id);
   if (!matchedUser) return;
-  startMusic(newState, matchedUser.musicConfig);
+  const updatedUser = await getUser(newState.member.id);
+  if (!updatedUser) return;
+  startMusic(newState, updatedUser.musicConfig);
 });
 
 client.on(Events.MessageCreate, (m) => {
